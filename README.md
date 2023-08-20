@@ -1,5 +1,8 @@
 ## Sharpen Deluxe a new Gimp Plugin to sharpen images (by generating a high pass mask)
 
+*download here
+https://github.com/LinuxBeaver/Gimp_Sharpen_Plugin/releases
+
 This is a Gimp GEGL plugin, it expects the user to use Gimp's built in Blending Options, also known as blend modes.
  All GEGL filters in Gimp have "blending options" with a long list of all Gimps blend modes. If you don't use
 that then it will just create a "high pass layer". which is a grayscale-ish layer can be stacked above and manually
