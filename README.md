@@ -1,4 +1,4 @@
-## Sharpen Delux a new Gimp Plugin to sharpen images
+## Sharpen Deluxe a new Gimp Plugin to sharpen images
 
 This is a Gimp GEGL plugin, it expects the user to use Gimp's built in Blending Options, also known as blend modes.
  All GEGL filters in Gimp have "blending options" with a long list of all Gimps blend modes. If you don't use
@@ -14,14 +14,14 @@ After you install, restart Gimp and go to GEGL operations and look for "Sharpen 
 
 To explain this filter a bit more technically. The following filters listed.
 
-Median Blur
+**Median Blur
 DCT Denoise
 Box Blur
 Mean Curvature Blur
 Domain Transform Smooth
 Noise Reduction
 Lens Blur
-Gaussian Blur
+Gaussian Blur**
 
 are all individually being grain extracted to create a high pass. 
 Gimp's grain extract blend mode gives you the high pass layer and 
