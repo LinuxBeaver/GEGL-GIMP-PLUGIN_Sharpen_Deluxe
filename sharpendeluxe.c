@@ -22,7 +22,7 @@ Pasting this syntax in Gimp's GEGL Graph filter will generate a static preview o
 
 id=1 
 gimp:layer-mode layer-mode=grain-extract blend-space=rgb-perceptual aux=[ ref=1 median-blur radius=10]
-
+gimp:layer-mode layer-mode=grain-merge blend-space=rgb-perceptual aux=[  ref=1  ]
 end of syntax 
 
 Replace Median Blur with other filters like `denoise-dct sigma=30` `mean-curvature-blur iterations=20` `box radius=10`
@@ -35,6 +35,7 @@ fun fact, this plugin was inspired by the first GEGL plugin I ever made bace in 
 this was during my early days of studying GEGL's code. Said original plugin is removed for being too simple. But it got a lot of attention on Gimp Chat
 as the first third party GEGL plugin ever. If you want to test what my first GEGL Plugin ever made was like set the sharpen to "Mean Curvature.
  */
+
 
 #include "config.h"
 #include <glib/gi18n-lib.h>
@@ -133,6 +134,9 @@ property_double (gaussian, _("Gaussian Blur Sharpen (default high pass)"), 5.0)
   ui_gamma    (2.0)
 ui_meta ("visible", "type {gaussian}" )
 
+property_boolean (autograinmerge, _("Auto Grain Merge (sharpen instantly)"), FALSE)
+  description    (_("Auto Switch to the Grain Merge blend mode. This will turn the high pass into a sharpen effect without needing to select blend modes. When using this make sure you have the default replace blend mode selected."))
+
 #else
 
 #define GEGL_OP_META
@@ -148,6 +152,9 @@ typedef struct
   GeglNode *mcb;
   GeglNode *grainextract;
   GeglNode *box;
+  GeglNode *nop1;
+  GeglNode *nop2;
+  GeglNode *grainmerge;
   GeglNode *median;
   GeglNode *denoise;
   GeglNode *ds;
@@ -161,8 +168,8 @@ typedef struct
 static void attach (GeglOperation *operation)
 {
   GeglNode *gegl = operation->node;
-  GeglProperties *o = GEGL_PROPERTIES (operation);
-  GeglNode *input, *output, *grainextract, *box, *ds, *nr, *mcb, *gaussian, *lens, *denoise, *median;
+GeglProperties *o = GEGL_PROPERTIES (operation);
+  GeglNode *input, *output, *grainextract, *box, *ds, *nr, *mcb, *gaussian, *lens, *denoise, *nop1, *nop2, *grainmerge, *median;
 
 
   input    = gegl_node_get_input_proxy (gegl, "input");
@@ -190,6 +197,19 @@ Also this is a good example of why Gimp only blend modes should be used as they 
  box   = gegl_node_new_child (gegl,
                                   "operation", "gegl:box-blur",
                                   NULL);
+
+ nop1   = gegl_node_new_child (gegl,
+                                  "operation", "gegl:nop",
+                                  NULL);
+
+ nop2   = gegl_node_new_child (gegl,
+                                  "operation", "gegl:nop",
+                                  NULL);
+
+grainmerge = gegl_node_new_child (gegl,
+                              "operation", "gimp:layer-mode", "layer-mode", 47, "composite-mode", 0, "blend-space", 2, NULL);
+
+
 
  mcb   = gegl_node_new_child (gegl,
                                   "operation", "gegl:mean-curvature-blur",
@@ -223,6 +243,7 @@ Also this is a good example of why Gimp only blend modes should be used as they 
   gegl_operation_meta_redirect (operation, "gaussian", gaussian, "std-dev-y");
 
   State *state = g_malloc0 (sizeof (State));
+  o->user_data = state;
   state->input = input;
   state->grainextract = grainextract;
   state->box = box;
@@ -233,20 +254,77 @@ Also this is a good example of why Gimp only blend modes should be used as they 
   state->nr = nr;
   state->lens = lens;
   state->gaussian = gaussian;
-
-
+  state->nop1 = nop1;
+  state->nop2 = nop2;
+  state->grainmerge = grainmerge;
   state->output = output;
+
   o->user_data = state;
 }
 
 static void
-
 update_graph (GeglOperation *operation)
 {
   GeglProperties *o = GEGL_PROPERTIES (operation);
   State *state = o->user_data;
+  if (!state) return;
 
-/*All filters in the list are put inside a graph that instructs them to be fused with Grain Extract*/
+if (o->autograinmerge) 
+
+
+switch (o->type) {
+        break;
+    case median:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->median, "output");
+            gegl_node_link_many (state->input, state->median, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case denoise:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->denoise, "output");
+            gegl_node_link_many (state->input, state->denoise, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case box:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->box, "output");
+            gegl_node_link_many (state->input, state->box, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case mcb:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->mcb, "output");
+            gegl_node_link_many (state->input, state->mcb, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case domainsmooth:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->ds, "output");
+            gegl_node_link_many (state->input, state->ds, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case noisereduction:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->nr, "output");
+            gegl_node_link_many (state->input, state->nr, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case lens:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->lens, "output");
+            gegl_node_link_many (state->input, state->lens, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+        break;
+    case gaussian:
+            gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
+            gegl_node_connect_from (state->grainextract, "aux", state->gaussian, "output");
+            gegl_node_link_many (state->input, state->gaussian, NULL);
+            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+    }
+
+else 
+
 switch (o->type) {
         break;
     case median:
@@ -288,43 +366,29 @@ switch (o->type) {
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
             gegl_node_connect_from (state->grainextract, "aux", state->gaussian, "output");
             gegl_node_link_many (state->input, state->gaussian, NULL);
-    }
 }
-
-/*I'd like to make a grain merge container checkbox that applys to ALL OF THESE GRAPHS but I don't know how to do it without making a hidden operation.
-It would probably look like this node linkage. The goal is to make it where every individual graph is put inside the grain merge blend mode.
-
-This graph is not defined and could have error as it was not tested.
-
-            gegl_node_link_many (state->input, nop1, state->grainmerge, state->output, NULL);
-            gegl_node_link_many (state->nop1, nop2, state->grainextract, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->MUHFILTER, "output");
-            gegl_node_link_many (state->nop2, state->MULTILFTER, NULL);
     }
+      
 
-Alternatively this could be solved if Gimp got an update that allowed GEGL filters to start on blend modes. This filter would then be able
-to start on the Grain Merge blend mode by default.
 
-Another node I'd like to add here is that I was thinking about adding difference of gaussian, difference of median blur, difference of denoise, ect... and
-have an addition checkbox for them. That is a potential future plan that would be even more difficult
-
-*/
+  
 
 static void
 gegl_op_class_init (GeglOpClass *klass)
 {
-  GeglOperationClass *operation_class = GEGL_OPERATION_CLASS (klass);
-   GeglOperationMetaClass *operation_meta_class = GEGL_OPERATION_META_CLASS (klass);
+  GeglOperationClass *operation_class;
+
+  operation_class = GEGL_OPERATION_CLASS (klass);
+  GeglOperationMetaClass *operation_meta_class = GEGL_OPERATION_META_CLASS (klass);
 
   operation_class->attach = attach;
   operation_meta_class->update = update_graph;
-
+ /*btw, if GEGL Effects (or any of my plugins) ever breaks try changing the name space from gegl: or lb: to something else.*/
   gegl_operation_class_set_keys (operation_class,
-/*If anything ever goes wrong with my plugins, try changing the name space from lb: to something else :D*/
     "name",        "lb:sharpen-deluxe",
     "title",       _("Sharpen Deluxe"),
     "reference-hash", "535233dashacpen",
-    "description", _("Sharpen images using different techniques. This filter requires using Blend Modes AKA Blending Options. Grain Merge is a true sharpen, but experiment with other blend modes and the opacity slider. From a technical perspective sharpens work by grain extracting the listed filters. "
+    "description", _("This filter grain extracts blurs and anisotropics to make a high pass. The gray outlined image is a high pass and it is suppose to be blended by Gimp's 'Blending Options/Blend Modes'. Grain Merge is a true sharpen, but experiment with other blend modes and the opacity slider. The user can also use the auto grain merge checkbox for convince. "
                      ""),
     "gimp:menu-path", "<Image>/Filters/Enhance",
     "gimp:menu-label", _("Sharpen Deluxe..."),
