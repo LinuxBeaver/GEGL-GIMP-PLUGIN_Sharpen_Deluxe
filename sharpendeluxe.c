@@ -276,51 +276,51 @@ switch (o->type) {
         break;
     case median:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->median, "output");
+            gegl_node_connect (state->grainextract, "aux", state->median, "output");
             gegl_node_link_many (state->input, state->median, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case denoise:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->denoise, "output");
+            gegl_node_connect (state->grainextract, "aux", state->denoise, "output");
             gegl_node_link_many (state->input, state->denoise, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case box:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->box, "output");
+            gegl_node_connect (state->grainextract, "aux", state->box, "output");
             gegl_node_link_many (state->input, state->box, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case mcb:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->mcb, "output");
+            gegl_node_connect (state->grainextract, "aux", state->mcb, "output");
             gegl_node_link_many (state->input, state->mcb, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case domainsmooth:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->ds, "output");
+            gegl_node_connect (state->grainextract, "aux", state->ds, "output");
             gegl_node_link_many (state->input, state->ds, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case noisereduction:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->nr, "output");
+            gegl_node_connect (state->grainextract, "aux", state->nr, "output");
             gegl_node_link_many (state->input, state->nr, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case lens:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->lens, "output");
+            gegl_node_connect (state->grainextract, "aux", state->lens, "output");
             gegl_node_link_many (state->input, state->lens, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
         break;
     case gaussian:
             gegl_node_link_many (state->input, state->grainextract, state->grainmerge, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->gaussian, "output");
+            gegl_node_connect (state->grainextract, "aux", state->gaussian, "output");
             gegl_node_link_many (state->input, state->gaussian, NULL);
-            gegl_node_connect_from (state->grainmerge, "aux", state->input, "output");
+            gegl_node_connect (state->grainmerge, "aux", state->input, "output");
     }
 
 else 
@@ -329,42 +329,42 @@ switch (o->type) {
         break;
     case median:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->median, "output");
+            gegl_node_connect (state->grainextract, "aux", state->median, "output");
             gegl_node_link_many (state->input, state->median, NULL);
         break;
     case denoise:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->denoise, "output");
+            gegl_node_connect (state->grainextract, "aux", state->denoise, "output");
             gegl_node_link_many (state->input, state->denoise, NULL);
         break;
     case box:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->box, "output");
+            gegl_node_connect (state->grainextract, "aux", state->box, "output");
             gegl_node_link_many (state->input, state->box, NULL);
         break;
     case mcb:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->mcb, "output");
+            gegl_node_connect (state->grainextract, "aux", state->mcb, "output");
             gegl_node_link_many (state->input, state->mcb, NULL);
         break;
     case domainsmooth:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->ds, "output");
+            gegl_node_connect (state->grainextract, "aux", state->ds, "output");
             gegl_node_link_many (state->input, state->ds, NULL);
         break;
     case noisereduction:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->nr, "output");
+            gegl_node_connect (state->grainextract, "aux", state->nr, "output");
             gegl_node_link_many (state->input, state->nr, NULL);
         break;
     case lens:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->lens, "output");
+            gegl_node_connect (state->grainextract, "aux", state->lens, "output");
             gegl_node_link_many (state->input, state->lens, NULL);
         break;
     case gaussian:
             gegl_node_link_many (state->input, state->grainextract, state->output, NULL);
-            gegl_node_connect_from (state->grainextract, "aux", state->gaussian, "output");
+            gegl_node_connect (state->grainextract, "aux", state->gaussian, "output");
             gegl_node_link_many (state->input, state->gaussian, NULL);
 }
     }
@@ -383,7 +383,7 @@ gegl_op_class_init (GeglOpClass *klass)
 
   operation_class->attach = attach;
   operation_meta_class->update = update_graph;
- /*btw, if GEGL Effects (or any of my plugins) ever breaks try changing the name space from gegl: or lb: to something else.*/
+ /*btw, if Graphical Effects (or any of my plugins) ever breaks try changing the name space from gegl: or lb: to something else.*/
   gegl_operation_class_set_keys (operation_class,
     "name",        "lb:sharpen-deluxe",
     "title",       _("Sharpen Deluxe"),
