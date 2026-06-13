@@ -18,7 +18,7 @@
 
 This is a plugin for Gimp that sharpens images in various ways.
  
-Pasting this syntax in Gimp's GEGL Graph filter will generate a static preview of this plugin. So users can test without installing.
+Pasting this syntax in Gimpꞌs GEGL Graph filter will generate a static preview of this plugin. So users can test without installing.
 
 id=1 
 gimp:layer-mode layer-mode=grain-extract blend-space=rgb-perceptual aux=[ ref=1 median-blur radius=10]
@@ -31,8 +31,8 @@ to see different types of high pass sharpens that this filter offers.
 
 all sharpens are made by grain extracting blurs and anisotropic filters
 
-fun fact, this plugin was inspired by the first GEGL plugin I ever made bace in May 2022, when I swapped high pass's "gaussian-blur" with "mean-curvature-blur' 
-this was during my early days of studying GEGL's code. Said original plugin is removed for being too simple. But it got a lot of attention on Gimp Chat
+fun fact, this plugin was inspired by the first GEGL plugin I ever made bace in May 2022, when I swapped high passꞌs "gaussian-blur" with "mean-curvature-blurꞌ 
+this was during my early days of studying GEGLꞌs code. Said original plugin is removed for being too simple. But it got a lot of attention on Gimp Chat
 as the first third party GEGL plugin ever. If you want to test what my first GEGL Plugin ever made was like set the sharpen to "Mean Curvature.
  */
 
@@ -45,7 +45,7 @@ as the first third party GEGL plugin ever. If you want to test what my first GEG
 property_enum (type, _("Type of Sharpen"),
     sharpenmeme, sharpen_meme,
     median)
-    description (_("Choose a sharpen mask. The filter selected is 'grain extracted' to make it a high pass sharpen mask."))
+    description (_("Choose a sharpen mask. The filter selected is ꞌgrain extractedꞌ to make it a high pass sharpen mask."))
 
 
 enum_start (sharpen_meme)
@@ -128,7 +128,7 @@ property_double (lens, _("Lens Blur Sharpen"), 11.0)
 ui_meta ("visible", "type {lens}" )
 
 property_double (gaussian, _("Gaussian Blur Sharpen (default high pass)"), 5.0)
-  description (_("Gaussian Blur High Pass. This is pretty much the same thing as Gimp's default high pass filter."))
+  description (_("Gaussian Blur High Pass. This is pretty much the same thing as Gimpꞌs default high pass filter."))
   value_range (0.0, 10.0)
   ui_range    (0.0, 10.0)
   ui_gamma    (2.0)
@@ -388,11 +388,11 @@ gegl_op_class_init (GeglOpClass *klass)
     "name",        "lb:sharpen-deluxe",
     "title",       _("Sharpen Deluxe"),
     "reference-hash", "535233dashacpen",
-    "description", _("This filter grain extracts blurs and anisotropics to make a high pass. The gray outlined image is a high pass and it is suppose to be blended by Gimp's 'Blending Options/Blend Modes'. Grain Merge is a true sharpen, but experiment with other blend modes and the opacity slider. The user can also use the auto grain merge checkbox for convince. "
+    "description", _("This filter grain extracts blurs and anisotropics to make a high pass. The gray outlined image is a high pass and it is suppose to be blended by Gimpꞌs ꞌBlending Options/Blend Modesꞌ. Grain Merge is a true sharpen, but experiment with other blend modes and the opacity slider. The user can also use the auto grain merge checkbox for convince. "
                      ""),
     "gimp:menu-path", "<Image>/Filters/Enhance",
     "gimp:menu-label", _("Sharpen Deluxe..."),
-/*This only appears in the menu path if used in Gimp 2.99.16 and up. It will not be in 2.10's menu unless Gimp's team backports, Aug 19 2023*/
+/*This only appears in the menu path if used in Gimp 2.99.16 and up. It will not be in 2.10ꞌs menu unless Gimpꞌs team backports, Aug 19 2023*/
     NULL);
 }
 
